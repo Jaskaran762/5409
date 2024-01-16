@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8-container1
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      run: k8-container1
+  template:
+    metadata:
+      labels:
+        run: k8-container1
+    spec:
+      containers:
+      - image: us-central1-docker.pkg.dev/csci-5409-2/k8-repo-container1/k8-container1-image:latest
+        imagePullPolicy: Always
+        name: k8-container1
+        ports:
+        - containerPort: 6000
+        volumeMounts:
+            - name: k8-assignment-volume
+              mountPath: /etc/data
+      volumes:
+        - name: k8-assignment-volume
+          persistentVolumeClaim:
+            claimName: k8-assignment-volume-claim

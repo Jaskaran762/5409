@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: k8-container1
+spec:
+  selector:
+     run: k8-container1
+  ports:
+  - protocol: TCP
+    port: 6000
+    targetPort: 6000
+  type: LoadBalancer

@@ -1,0 +1,49 @@
+# https://cloud.google.com/build/docs/configuring-builds/create-basic-configuration
+steps:
+
+- name: 'gcr.io/cloud-builders/docker' 
+  entrypoint: 'bash'
+  args: [
+   '-c', 
+   'docker pull us-central1-docker.pkg.dev/csci-5409-2/k8-repo-container1/k8-container1-image:latest || exit 0'
+  ]
+ # Docker Build
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'us-central1-docker.pkg.dev/csci-5409-2/k8-repo-container1/k8-container1-image', '.']
+
+ # Docker Push to Artifact Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-central1-docker.pkg.dev/csci-5409-2/k8-repo-container1/k8-container1-image']
+
+# https://nilesh93.medium.com/ci-cd-with-gke-and-google-cloud-build-98a797ecf346 
+
+#step 3
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['apply', '-f', 'k8/']
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=k8s-cluster'
+
+#step 4
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: [
+   'set', 
+   'image', 
+   'deployment', 
+   'k8-container1', 
+   'k8-container1=us-central1-docker.pkg.dev/csci-5409-2/k8-repo-container1/k8-container1-image:latest'
+  ]
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=k8s-cluster'
+
+#step 5
+- name: 'gcr.io/cloud-builders/kubectl'
+  args:
+  - 'rollout'
+  - 'restart'
+  - 'deployment/k8-container1'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=k8s-cluster'
+

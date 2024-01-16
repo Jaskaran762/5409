@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  regionhandler:
+    build: ./regionhandler
+    image: jaskaran762/a1-regionhandler
+    container_name: regionhandler
+    ports:
+      - "6000:6000"
+    networks:
+      - custom-network
+    volumes:
+      - .:/etc/data
+  
+  temphandler:
+    build: ./temphandler
+    image: jaskaran762/a1-temphandler
+    container_name: temphandler
+    ports:
+      - "6050:6050"
+    networks:
+      - custom-network
+    volumes:
+      - .:/etc/data
+
+networks:
+  custom-network:
+    driver: bridge
